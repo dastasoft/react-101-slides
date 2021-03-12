@@ -1,0 +1,18 @@
+meta:
+  url:
+  title: React 101
+  description:
+  siteName: React 101
+slide:
+  loop: false
+  ui:
+    sidebar: true
+    pagination: bullets # bullets | progressbar | fraction
+    effect: # fade | cube | flip
+  code:
+    languages: 
+      - html
+      - javascript
+    plugins:
+      - line-numbers
+    theme: default
