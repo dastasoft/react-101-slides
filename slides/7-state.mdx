@@ -1,0 +1,287 @@
+<!-- section-title: 🌀 Estado -->
+
+# 🌀 Estado
+
+<br />
+
+En React tenemos, a grandes rasgos, dos tipos de estado:
+
+- Global: Es el estado propio de la aplicación en su conjunto, se suele manejar de forma centralizada.
+- Por componente: Los propios componentes pueden tener un estado propio que solo incumbe a ellos mismos o sus nodos hijos.
+
+Para manejar el estado de los componentes React nos provee de dos funciones, `useState` y `useEffect`. Estas funciones se conocen como `hooks`.
+
+_Hay librerías como `Redux` o `Recoil` que están 100% enfocadas al manejo del estado de forma global._
+
+---
+
+## Render y Re-render
+
+Antes de hablar sobre el estado en detalle, repasemos algunos conceptos. Hablamos de `render` cuando un componente se pinta en pantalla y de `re-render` cuando este se actualiza, pasa por el core de React y se vuelve a pintar.
+
+La regla general es: "Todos los componentes en React hacen re-render solo si cambian sus props o el estado".
+
+```js
+import React from 'react';
+
+const Counter = () => {
+  const count = 0;
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => (count += 1)}>Click me!</button>
+      <button onClick={() => (count = 0)}>Reset</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+### ¿Porque no funciona?
+
+import BadCounter from '../src/components/BadCounter';
+
+<BadCounter />
+
+---
+
+## useState
+
+Para dotar a un componente de estado, tan solo debemos utilizar el hook `useState` dentro del componente.
+
+```js
+import React, { useState } from 'react';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>Click me!</button>
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+La utilización de useState consta de varios apartados:
+
+- El nombre de la variable de estado que queramos
+- La función con la que se le asignarán nuevos valores
+- Un valor inicial
+
+import Counter from '../src/components/Counter';
+
+<Counter />
+
+---
+
+## useState
+
+Es una mala practica no dividir el estado, ya que podría darse el caso de modificar el objeto y perder datos por el camino.
+
+```js
+import React, { useState } from 'react';
+
+const Counter = () => {
+  const [count, setCount] = useState({ value: 0, isFresh: true });
+
+  return (
+    <div className="react-component">
+      <p>You clicked {count.value} times</p>
+      <p>I'm {count.isFresh ? 'fresh' : 'not fresh'}</p>
+      <button
+        onClick={() => setCount({ value: count.value + 1, isFresh: false })}
+      >
+        Click me!
+      </button>
+      <button onClick={() => setCount({ value: 0, isFresh: true })}>
+        Reset
+      </button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+import BadState from '../src/components/BadState';
+
+<BadState />
+
+---
+
+## useState
+
+El estado, por regla general debe ser lo mas atómico posible.
+
+```js
+import React, { useState } from 'react';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+  const [isFresh, setIsFresh] = useState(true);
+
+  return (
+    <div className="react-component">
+      <p>You clicked {count} times</p>
+      <p>I'm {isFresh ? 'fresh' : 'not fresh'}</p>
+      <button
+        onClick={() => {
+          setCount(count + 1);
+          setIsFresh(false);
+        }}
+      >
+        Click me!
+      </button>
+      <button
+        onClick={() => {
+          setCount(0);
+          setIsFresh(true);
+        }}
+      >
+        Reset
+      </button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+---
+
+## useEffect
+
+Este hook nos permite controlar el ciclo de vida del componente y reaccionar a los distintos cambios que van sucediendo en el mismo.
+
+```js
+import React, { useEffect, useState } from 'react';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+  const [welcomeMsg, setWelcomeMsg] = useState('');
+
+  useEffect(() => {
+    setWelcomeMsg('Welcome to the counter app');
+  }, []);
+
+  const onClickHandler = () => {
+    setWelcomeMsg('Do you like it?');
+    setCount(count + 1);
+  };
+
+  return (
+    <div className="react-component">
+      <p>{welcomeMsg}</p>
+      <p>You clicked {count} times</p>
+      <button onClick={onClickHandler}>Click me!</button>
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+import CounterWithEffect from '../src/components/CounterWithEffect';
+
+<CounterWithEffect />
+
+---
+
+## Ciclos de vida
+
+Con useEffect podemos reaccionar en diferentes momentos del ciclo de vida del componente, las diferentes opciones son:
+
+- El componente se renderiza por primera vez
+- El componente efectúa un re-render
+- La aplicación efectúa un re-render
+- El componente se destruye del DOM
+
+![lifecycle-events](https://www.britwise.com/blog/wp-content/uploads/2019/10/React-Lifecycle.png)
+
+---
+
+## Ciclos de vida
+
+```js
+useEffect(() => {
+  console.log('I get executed when characters variable changes');
+}, [characters]);
+
+useEffect(() => {
+  console.log('I get executed when characters and/or jobs variables changes');
+}, [characters, jobs]);
+
+useEffect(() => {
+  console.log('I get executed with the first render');
+}, []);
+
+useEffect(() => {
+  console.log('I get executed every render');
+});
+
+useEffect(() => {
+  console.log('I get executed with the first render');
+  return () => {
+    console.log("I get executed when I've been destroyed");
+  };
+}, []);
+```
+
+_Podemos tener tantos useEffect como necesitemos en un mismo componente_
+
+---
+
+## useContext
+
+Un problema muy común en aplicaciones de tamaño medio-grande es tener que pasar propiedades de estado a muchos niveles de profundidad entre componentes. Para solucionar este problema, podemos hacer uso del hook `useContext`.
+
+Con el contexto crearemos un contenedor que englobará el componente padre y todos los componentes hijos, de esta forma podremos acceder a los datos del contexto desde cualquier nivel de profundidad sin tener que pasarlo proactivamente como prop.
+
+---
+
+## useContext
+
+```js
+import React, { createContext, useContext, useState } from 'react';
+
+const CounterContext = createContext();
+
+const Display = () => {
+  const value = useContext(CounterContext);
+  return <p>You clicked {value} times</p>;
+};
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="react-component">
+      <CounterContext.Provider value={count}>
+        <Display />
+        <button onClick={() => setCount(count + 1)}>Click me!</button>
+        <button onClick={() => setCount(0)}>Reset</button>
+      </CounterContext.Provider>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+import CounterWithContext from '../src/components/CounterWithContext';
+
+<CounterWithContext />
+
+---
+
+## useContext
+
+Se pueden tener tantos contextos como se necesiten, es una buena práctica separarlos por conceptos o necesidades, pero también podemos imitar el patrón de contexto global.

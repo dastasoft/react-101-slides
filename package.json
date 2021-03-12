@@ -1,0 +1,19 @@
+{
+  "name": "react-training",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "fusuma start",
+    "start:prod": "fusuma start-prod",
+    "build": "fusuma build",
+    "deploy": "npm run build && fusuma deploy",
+    "pdf": "npm run build && fusuma pdf"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "fusuma": "^2.7.0"
+  }
+}
