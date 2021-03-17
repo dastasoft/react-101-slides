@@ -143,3 +143,4 @@ const MyComponent = () => {
 
 - No es un standard que se pueda utilizar fácilmente fuera del ecosistema React.
 - Se debe recargar la aplicación mientras se codifica.
+- Se incrementa notablemente el tamaño del JS a empaquetar.
